@@ -436,8 +436,8 @@
     }).join('');
   }
 
-  async function sendDungeonRewards(idx) {
-    const run = dungeonRuns[idx];
+  async function sendDungeonRewards(runIndex) {
+    const run = dungeonRuns[runIndex];
     if (!run || !run.rewards.length) return;
     const runId = run.id;
     const player = run.player;
@@ -447,16 +447,16 @@
     if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
 
     // Send each reward token one by one
-    let idx = 0;
+    let rewardIdx = 0;
     function sendNext() {
-      if (idx >= rewards.length) {
+      if (rewardIdx >= rewards.length) {
         dungeonDelivered.add(runId);
         localStorage.setItem('bo_dungeon_delivered', JSON.stringify([...dungeonDelivered]));
         renderDungeonRows();
         loadDungeonRewards();
         return;
       }
-      const reward = rewards[idx];
+      const reward = rewards[rewardIdx];
       const json = JSON.stringify({
         contractName: 'tokens',
         contractAction: 'transfer',
@@ -472,7 +472,7 @@
         'Send ' + reward.qty + ' ' + reward.token + ' to @' + player,
         function(response) {
           if (response.success) {
-            idx++;
+            rewardIdx++;
             sendNext();
           } else {
             if (btn) { btn.disabled = false; btn.textContent = 'SEND REWARDS'; }
